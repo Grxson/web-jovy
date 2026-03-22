@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ABOUT_FEATURES } from "@/lib/constants";
+import { CERTIFICATIONS } from "@/lib/constants";
 
 const container = {
   hidden: { opacity: 0 },
@@ -14,15 +14,15 @@ const container = {
 };
 
 const item = {
-  hidden: { opacity: 0, x: -20 },
-  show: { opacity: 1, x: 0 },
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 },
 };
 
-export function AboutSection() {
+export function CertificationsSection() {
   return (
-    <section id="nosotros" className="px-6 py-16 sm:px-10 lg:px-16">
+    <section id="certificaciones" className="px-6 py-16 sm:px-10 lg:px-16 bg-gradient-to-br from-[#0fb8b4]/5 to-[var(--color-primary)]/5">
       <div className="mx-auto w-full max-w-6xl space-y-12">
-        <div className="space-y-4">
+        <div className="space-y-4 text-center">
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -41,16 +41,6 @@ export function AboutSection() {
           >
             Dolor Sit Amet Consectetur
           </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg text-[var(--color-muted)] max-w-2xl"
-          >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          </motion.p>
         </div>
 
         <motion.div
@@ -60,18 +50,22 @@ export function AboutSection() {
           viewport={{ once: true, margin: "-80px" }}
           className="grid gap-6 md:grid-cols-3"
         >
-          {ABOUT_FEATURES.map((feature) => (
+          {CERTIFICATIONS.map((cert) => (
             <motion.article
-              key={feature.id}
+              key={cert.id}
               variants={item}
-              className="rounded-[2rem] bg-gradient-to-br from-white to-[var(--color-soft)] p-6 shadow-lg ring-1 ring-white/20 hover:shadow-xl transition-shadow"
+              className="rounded-2xl bg-white p-8 shadow-lg ring-1 ring-white/20 hover:shadow-xl transition-all hover:-translate-y-2"
             >
+              <div className="text-4xl mb-4">{cert.icon}</div>
               <h3 className="font-semibold text-lg text-[var(--color-ink)] mb-2">
-                {feature.title}
+                {cert.name}
               </h3>
-              <p className="text-[var(--color-muted)]">
-                {feature.description}
+              <p className="text-sm text-[var(--color-muted)] mb-3">
+                {cert.issuer}
               </p>
+              <div className="inline-block px-3 py-1 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-semibold">
+                Año {cert.year}
+              </div>
             </motion.article>
           ))}
         </motion.div>
