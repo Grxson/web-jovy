@@ -1,65 +1,159 @@
 "use client";
 
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+
+type Slide = {
+  id: string;
+  title: string;
+  flavor: string;
+  image: string;
+};
+
+const SLIDES: Slide[] = [
+  {
+    id: "slide-1",
+    title: "x x",
+    flavor: "x x",
+    image: "/images/products/box-fiesta-frutal.svg",
+  },
+  {
+    id: "slide-2",
+    title: "x x",
+    flavor: "x",
+    image: "/images/products/mix-luxury-tropical.svg",
+  },
+  {
+    id: "slide-3",
+    title: "x x",
+    flavor: "x",
+    image: "/images/products/mini-party-pack.svg",
+  },
+  {
+    id: "slide-4",
+    title: "x x",
+    flavor: "x",
+    image: "/images/products/choco-crunch-collection.svg",
+  },
+  {
+    id: "slide-5",
+    title: "x x",
+    flavor: "x",
+    image: "/images/products/box-fiesta-frutal.svg",
+  },
+];
+
+function getWrappedIndex(index: number, total: number) {
+  return (index + total) % total;
+}
 
 export function HeroSection() {
-  return (
-    <section className="relative isolate overflow-hidden px-6 pt-20 pb-16 sm:px-10 lg:px-16">
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="space-y-6"
-        >
-          <span className="inline-flex rounded-full bg-white/85 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-primary-dark)] ring-1 ring-[var(--color-border)]">
-            x x x x
-          </span>
-          <h1 className="font-display text-5xl leading-tight text-[var(--color-ink)] sm:text-6xl">
-            x x x x x x.
-          </h1>
-          <p className="max-w-xl text-lg text-[var(--color-muted)]">
-            x x x x x x x x x x x x x.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="#contacto"
-              className="inline-flex items-center justify-center rounded-full bg-[var(--color-primary)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-200 transition hover:-translate-y-0.5 hover:bg-[var(--color-primary-dark)]"
-            >
-              boton x
-            </Link>
-            <Link
-              href="#productos"
-              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[var(--color-ink)] ring-1 ring-[var(--color-border)] transition hover:bg-[var(--color-soft)]"
-            >
-              opcion x
-            </Link>
-          </div>
-        </motion.div>
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const [isPaused, setIsPaused] = useState(false);
 
+  useEffect(() => {
+    if (isPaused) {
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      setDirection(1);
+      setActiveIndex((prev) => getWrappedIndex(prev + 1, SLIDES.length));
+    }, 4000);
+
+    return () => window.clearInterval(interval);
+  }, [isPaused]);
+
+  const currentSlide = SLIDES[activeIndex];
+
+  return (
+    <section
+      className="relative isolate overflow-hidden border-b-2 border-[var(--color-primary)] bg-[linear-gradient(180deg,#0fb8b4_0%,#0ca9a6_100%)]"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div className="relative w-full h-[500px] sm:h-[600px] lg:h-[700px]">
         <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="relative rounded-[2rem] border border-white/70 bg-white/70 p-8 shadow-[0_30px_80px_rgba(251,146,60,0.25)] backdrop-blur"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          onDragEnd={(_, info) => {
+            if (info.offset.x < -50) {
+              setDirection(1);
+              setActiveIndex((prev) => getWrappedIndex(prev + 1, SLIDES.length));
+            } else if (info.offset.x > 50) {
+              setDirection(-1);
+              setActiveIndex((prev) => getWrappedIndex(prev - 1, SLIDES.length));
+            }
+          }}
+          className="w-full h-full cursor-grab active:cursor-grabbing"
         >
-          <div className="space-y-4">
-            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-primary-dark)]">
-              x x x x
-            </p>
-            <h2 className="font-display text-3xl text-[var(--color-ink)]">
-              titulo x
-            </h2>
-            <p className="text-sm text-[var(--color-muted)]">
-              x x x x x x x x x x.
-            </p>
-            <p className="text-2xl font-bold text-[var(--color-primary-dark)]">
-              $xxx
-            </p>
-          </div>
-          <div className="mt-8 h-44 rounded-3xl bg-[radial-gradient(circle_at_30%_20%,#f82064_0%,#ff6fa1_45%,#ffd1e2_90%)]" />
+          <AnimatePresence initial={false} mode="popLayout">
+            <motion.div
+              key={currentSlide.id}
+              initial={{
+                opacity: 0,
+                x: direction > 0 ? 800 : -800,
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+              }}
+              exit={{
+                opacity: 0,
+                x: direction > 0 ? -800 : 800,
+              }}
+              transition={{
+                duration: 0.5,
+                ease: "easeInOut",
+                type: "spring",
+                stiffness: 250,
+                damping: 28,
+              }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <Image
+                src={currentSlide.image}
+                alt={currentSlide.title}
+                fill
+                className="object-cover"
+                priority
+                sizes="100vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex flex-col items-center justify-center">
+                <h2 className="text-white text-4xl sm:text-5xl lg:text-6xl font-bold uppercase tracking-wide text-center mb-4">
+                  {currentSlide.title}
+                </h2>
+                <p className="text-white/90 text-lg sm:text-xl">
+                  {currentSlide.flavor}
+                </p>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
+      </div>
+
+      <div className="flex items-center justify-center gap-2 py-6 bg-[linear-gradient(180deg,#0ca9a6_0%,#0a9698_100%)]">
+        {SLIDES.map((slide, index) => (
+          <button
+            key={slide.id}
+            type="button"
+            aria-label={`Ir al slide ${index + 1}`}
+            onClick={() => {
+              if (index > activeIndex) {
+                setDirection(1);
+              } else if (index < activeIndex) {
+                setDirection(-1);
+              }
+              setActiveIndex(index);
+            }}
+            className={`h-3 rounded-full transition-all ${
+              activeIndex === index ? "w-8 bg-white" : "w-3 bg-white/45"
+            }`}
+          />
+        ))}
       </div>
     </section>
   );
