@@ -33,9 +33,6 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.name}
         </h3>
         <p className="text-sm text-[var(--color-muted)]">{product.description}</p>
-        <p className="text-lg font-bold text-[var(--color-primary-dark)]">
-          {product.price}
-        </p>
       </div>
     </motion.article>
   );

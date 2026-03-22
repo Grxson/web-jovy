@@ -10,18 +10,35 @@ const container = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2,
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
     },
   },
 };
 
 const item = {
-  hidden: { opacity: 0, scale: 0.95 },
-  show: { opacity: 1, scale: 1 },
+  hidden: { opacity: 0, y: 30 },
+  show: { 
+    opacity: 1, 
+    y: 0,
+  },
 };
 
 export function ProductsSection() {
-  const mainProducts = PRODUCTS.slice(0, 3);
+  const categories = PRODUCTS.slice(0, 3).map((product) => ({
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    image: product.image,
+  }));
+
+  // Crear slug a partir del nombre (ej: "Fiesta Frutal Box" -> "fiesta-frutal-box")
+  const getCategorySlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]/g, "");
+  };
 
   return (
     <section id="productos" className="px-6 py-16 sm:px-10 lg:px-16">
@@ -43,57 +60,35 @@ export function ProductsSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid gap-6 md:grid-cols-3"
+          className="grid gap-12 md:grid-cols-3 place-items-center"
         >
-          {mainProducts.map((product) => (
+          {categories.map((category) => (
             <motion.div
-              key={product.id}
+              key={category.id}
               variants={item}
-              whileHover={{ y: -8 }}
-              className="group"
+              transition={{ duration: 0.6 }}
+              className="group cursor-pointer"
             >
-              <Link href={`/productos/${product.id}`}>
-                <article className="relative h-[520px] rounded-[3rem] overflow-hidden shadow-2xl ring-1 ring-white/20 hover:shadow-3xl transition-all cursor-pointer">
-                  {/* Imagen de fondo */}
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-
-                  {/* Overlay gradiente */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-
-                  {/* Contenido */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-between p-8">
-                    {/* Badge en la parte superior */}
-                    <div className="px-4 py-2 rounded-full bg-white/90 text-[var(--color-ink)] text-xs font-black uppercase tracking-wider">
-                      {product.badge}
-                    </div>
-
-                    {/* Nombre y descripción centrados */}
-                    <div className="text-center space-y-4">
-                      <h3 className="font-display text-5xl lg:text-6xl font-black text-white uppercase leading-tight tracking-wider">
-                        {product.name}
-                      </h3>
-                      <p className="text-white/80 text-base font-semibold max-h-12 line-clamp-2">
-                        {product.description}
-                      </p>
-                      <div className="pt-4">
-                        <button className="px-8 py-3 bg-[var(--color-primary)] text-white font-bold rounded-full text-lg hover:brightness-110 transition-all transform group-hover:scale-110">
-                          Explorar →
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Precio en la parte inferior */}
-                    <div className="text-white text-center">
-                      <p className="text-sm text-white/70">Desde</p>
-                      <p className="text-4xl font-black">{product.price}</p>
-                    </div>
+              <Link href={`/productos?category=${getCategorySlug(category.name)}`}>
+                {/* Círculo con imagen */}
+                <motion.div
+                  whileHover={{ scale: 1.1, translateY: -12 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  className="relative"
+                >
+                  <div className="relative w-72 h-72 rounded-full overflow-hidden shadow-2xl ring-4 ring-[var(--color-primary)]/20 group-hover:ring-[var(--color-primary)]/50 transition-all duration-300">
+                    {/* Efecto de brillo sutil */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-white/10 rounded-full pointer-events-none z-10" />
+                    
+                    <Image
+                      src={category.image}
+                      alt={category.name}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
                   </div>
-                </article>
+                </motion.div>
               </Link>
             </motion.div>
           ))}
@@ -104,13 +99,17 @@ export function ProductsSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex justify-center pt-8"
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="flex justify-center pt-12"
         >
           <Link href="/productos">
-            <button className="px-10 py-4 bg-[var(--color-primary)] text-white font-bold rounded-full text-lg hover:brightness-110 transition-all shadow-lg">
+            <motion.button 
+              whileHover={{ scale: 1.05, translateY: -4 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-12 py-4 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white font-bold rounded-full text-lg shadow-lg shadow-[var(--color-primary)]/30 hover:shadow-xl hover:shadow-[var(--color-primary)]/50 transition-all"
+            >
               Ver Todos Los Productos →
-            </button>
+            </motion.button>
           </Link>
         </motion.div>
       </div>

@@ -1,23 +1,24 @@
 "use client";
 
+import { use } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { PRODUCTS } from "@/lib/constants";
-import { Button } from "@/components/ui/Button";
 import { NavbarSection } from "@/components/sections/NavbarSection";
 import { FooterSection } from "@/components/sections/FooterSection";
 import { WhatsAppFloat } from "@/components/sections/WhatsAppFloat";
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
-  const product = PRODUCTS.find((p) => p.id === params.id);
-  const relatedProducts = PRODUCTS.filter((p) => p.id !== params.id).slice(0, 3);
+  const { id } = use(params);
+  const product = PRODUCTS.find((p) => p.id === id);
+  const relatedProducts = PRODUCTS.filter((p) => p.id !== id).slice(0, 3);
 
   if (!product) {
     return (
@@ -41,15 +42,17 @@ export default function ProductPage({ params }: ProductPageProps) {
       <main className="min-h-screen bg-white">
         {/* Breadcrumb */}
         <div className="px-6 py-4 sm:px-10 lg:px-16 border-b border-gray-200">
-          <div className="mx-auto w-full max-w-6xl">
-            <Link href="/productos" className="text-sm text-[var(--color-primary)] hover:underline">
-              ← Volver a productos
-            </Link>
+          <div className="mx-auto w-full max-w-6xl flex items-center space-x-2 text-sm text-[var(--color-muted)]">
+            <Link href="/" className="hover:text-[var(--color-primary)]">home</Link>
+            <span>›</span>
+            <Link href="/productos" className="hover:text-[var(--color-primary)]">productos</Link>
+            <span>›</span>
+            <span className="text-[var(--color-ink)] font-semibold">{product.name}</span>
           </div>
         </div>
 
         {/* Producto Principal */}
-        <section className="px-6 py-16 sm:px-10 lg:px-16">
+        <section className="px-6 py-16 sm:px-10 lg:px-16 bg-[#7CB342]">
           <div className="mx-auto w-full max-w-6xl">
             <div className="grid gap-12 lg:grid-cols-2">
               {/* Imagen */}
@@ -57,18 +60,16 @@ export default function ProductPage({ params }: ProductPageProps) {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
-                className="relative h-[500px] rounded-[2rem] overflow-hidden bg-[var(--color-soft)] shadow-lg"
+                className="relative h-[600px] flex items-center justify-center"
               >
                 <Image
                   src={product.image}
                   alt={product.name}
-                  fill
-                  className="object-cover"
+                  width={300}
+                  height={600}
+                  className="object-contain"
                   priority
                 />
-                <div className="absolute top-4 right-4 px-4 py-2 rounded-full bg-[var(--color-primary)] text-white font-bold">
-                  {product.badge}
-                </div>
               </motion.div>
 
               {/* Contenido */}
@@ -76,49 +77,53 @@ export default function ProductPage({ params }: ProductPageProps) {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="space-y-6"
+                className="space-y-8 flex flex-col justify-center"
               >
+                {/* Badge */}
+                <div className="inline-flex w-fit">
+                  <span className="px-4 py-2 rounded-full bg-white text-[#7CB342] text-xs font-bold uppercase tracking-wider">
+                    {product.badge}
+                  </span>
+                </div>
+
+                {/* Nombre */}
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-primary)] mb-2">
-                    Producto
-                  </p>
-                  <h1 className="font-display text-4xl lg:text-5xl text-[var(--color-ink)]">
+                  <h1 className="font-display text-5xl lg:text-6xl text-white font-black uppercase tracking-tight leading-tight">
                     {product.name}
                   </h1>
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-lg text-[var(--color-muted)]">
+                {/* Descripción */}
+                <div className="space-y-4">
+                  <p className="text-white/90 text-lg leading-relaxed">
                     {product.description}
                   </p>
+                  <ul className="space-y-2 text-white/80 text-sm">
+                    <li>✓ With concentrated natural fruit</li>
+                    <li>✓ A gluten free food</li>
+                    <li>✓ Naturally fat free</li>
+                    <li>✓ Enriched with Vitamin C</li>
+                  </ul>
                 </div>
 
-                <div className="space-y-4 border-y border-gray-200 py-6">
-                  <div>
-                    <p className="text-sm text-[var(--color-muted)] mb-2">Precio</p>
-                    <p className="text-4xl font-bold text-[var(--color-primary)]">
-                      {product.price}
-                    </p>
+                {/* Especificaciones */}
+                <div className="border-t border-white/20 pt-8">
+                  <h3 className="text-white font-bold text-lg mb-4 uppercase tracking-wider">
+                    SPECS
+                  </h3>
+                  <div className="space-y-3 text-white/90 text-sm">
+                    <p><span className="font-semibold">Weight per piece / Net Wt.:</span> 0.75 oz (21.2 g)</p>
+                    <p><span className="font-semibold">Pieces per display:</span> 48</p>
+                    <p><span className="font-semibold">Display per Box:</span> 1</p>
+                    <p><span className="font-semibold">Box Weight / Net Wt.:</span> 2 lb 3 oz (1.02 kg)</p>
                   </div>
                 </div>
 
+                {/* Botones */}
                 <div className="space-y-3 pt-4">
-                  <Button className="w-full" size="lg">
-                    Agregar al Carrito
-                  </Button>
-                  <Link
-                    href={`https://wa.me/5215512345678?text=Hola, estoy interesado en ${product.name}`}
-                    target="_blank"
-                    className="block w-full px-6 py-3 rounded-lg border-2 border-[var(--color-primary)] text-[var(--color-primary)] text-center font-semibold hover:bg-[var(--color-primary)]/5 transition"
-                  >
-                    💬 Contactar por WhatsApp
-                  </Link>
-                </div>
-
-                <div className="bg-[var(--color-soft)] rounded-lg p-4 text-sm text-[var(--color-muted)]">
-                  <p>✓ Envíos a toda la república</p>
-                  <p>✓ Producto 100% auténtico</p>
-                  <p>✓ Garantía de calidad</p>
+                  <button className="text-white font-bold text-lg uppercase tracking-wider hover:underline">
+                    DOWNLOAD ↓
+                  </button>
                 </div>
               </motion.div>
             </div>
